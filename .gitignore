@@ -205,3 +205,12 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+
+# Arquivos do projeto que não sobem
+*.pbix          # Power BI pode ser pesado demais
+*.db            # banco SQLite fica só local
+
+# Arquivos do Windows
+Thumbs.db
+desktop.ini
