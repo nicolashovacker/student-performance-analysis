@@ -58,14 +58,14 @@ Impacto mínimo quando comparado às horas de estudo.
 ---
 
 ## Estrutura do repositório
-
+```
 student-performance-analysis/
 ├── data/
 ├── graficos/
 ├── notebooks/
 ├── sql/
 ├── README.md
-
+```
 ## Progresso do projeto
 
 - [x] Dataset importado e estruturado no SQLite (via DBeaver)
