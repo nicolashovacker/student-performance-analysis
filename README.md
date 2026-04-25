@@ -89,5 +89,5 @@ student-performance-analysis/
 - [x] Integração com Python (Jupyter Notebook)
 - [x] Geração de 5 gráficos (.png)
 - [x] Dashboard no Power BI
-- [x] Documentação final
+- [x] Documentação final — `relatorio_insights.html` (gerado com Claude AI)
 - [x] README final com prints do dashboard
