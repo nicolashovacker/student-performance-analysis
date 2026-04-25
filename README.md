@@ -89,5 +89,5 @@ student-performance-analysis/
 - [x] Integração com Python (Jupyter Notebook)
 - [x] Geração de 5 gráficos (.png)
 - [x] Dashboard no Power BI
-- [ ] Documentação final
-- [ ] README final com prints do dashboard
+- [x] Documentação final
+- [x] README final com prints do dashboard
