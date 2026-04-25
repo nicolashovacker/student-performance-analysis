@@ -61,10 +61,21 @@ Impacto mínimo quando comparado às horas de estudo.
 ```
 student-performance-analysis/
 ├── data/
+│   └── raw/
+│       └── student_performance.csv
 ├── graficos/
+│   ├── grafico1_aprovacao_geral.png
+│   ├── grafico2_perfil_medio.png
+│   ├── grafico3_aprovacao_por_horas.png
+│   ├── grafico4_escolaridade_pais.png
+│   └── grafico5_top_alunos_genero.png
 ├── notebooks/
+│   └── analise_student_performance.ipynb
 ├── sql/
-├── README.md
+│   └── 01_analises.sql
+├── dashboard/
+│   └── dashboard_student_performance.pbix
+└── README.md
 ```
 ## Progresso do projeto
 
@@ -72,5 +83,6 @@ student-performance-analysis/
 - [x] Análises SQL desenvolvidas (8 queries)
 - [x] Integração com Python (Jupyter Notebook)
 - [x] Geração de 5 gráficos (.png)
-- [ ] Dashboard no Power BI
+- [x] Dashboard no Power BI
 - [ ] Documentação final
+- [ ] README final com prints do dashboard
