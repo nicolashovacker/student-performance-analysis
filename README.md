@@ -57,6 +57,11 @@ Impacto mínimo quando comparado às horas de estudo.
 
 ---
 
+## Dashboard Power BI
+![Dashboard](graficos/dashboard_preview.png)
+
+---
+
 ## Estrutura do repositório
 ```
 student-performance-analysis/
