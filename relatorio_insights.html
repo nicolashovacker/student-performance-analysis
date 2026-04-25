@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Relatório de Desempenho Estudantil</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --bg2: #161b27;
+    --bg3: #1e2535;
+    --border: #2a3349;
+    --text: #e8eaf0;
+    --text2: #8892a4;
+    --text3: #5a6478;
+    --accent: #4f8ef7;
+    --accent2: #38d9a9;
+    --danger: #f76f6f;
+    --warn: #f7a84f;
+    --success: #38d9a9;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 3rem 0 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  header::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: -60px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(79,142,247,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; right: -40px;
+    width: 280px; height: 280px;
+    background: radial-gradient(circle, rgba(56,217,169,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  .tag {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(79,142,247,0.1);
+    border: 1px solid rgba(79,142,247,0.25);
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 1.2rem;
+  }
+
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 400;
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: 0.8rem;
+  }
+
+  h1 em {
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  .header-sub {
+    font-size: 15px;
+    color: var(--text2);
+    max-width: 560px;
+    margin-bottom: 2rem;
+  }
+
+  .header-meta {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text3);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .meta-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent2);
+  }
+
+  /* LAYOUT */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 3rem 2rem 5rem;
+  }
+
+  section { margin-bottom: 4rem; }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.7rem;
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 1.5rem;
+  }
+
+  /* KPI GRID */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 3rem;
+  }
+
+  .kpi {
+    background: var(--bg2);
+    padding: 1.8rem 1.5rem;
+    position: relative;
+    transition: background 0.2s;
+  }
+
+  .kpi:hover { background: var(--bg3); }
+
+  .kpi-label {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 0.5rem;
+  }
+
+  .kpi-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 2.6rem;
+    line-height: 1;
+    margin-bottom: 0.3rem;
+  }
+
+  .kpi-value.blue { color: var(--accent); }
+  .kpi-value.green { color: var(--accent2); }
+  .kpi-value.red { color: var(--danger); }
+  .kpi-value.warn { color: var(--warn); }
+
+  .kpi-sub {
+    font-size: 12px;
+    color: var(--text3);
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.2rem;
+    flex-wrap: wrap;
+  }
+
+  .query-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+
+  .qt-blue { background: rgba(79,142,247,0.12); color: var(--accent); border: 1px solid rgba(79,142,247,0.2); }
+  .qt-green { background: rgba(56,217,169,0.1); color: var(--accent2); border: 1px solid rgba(56,217,169,0.2); }
+  .qt-red { background: rgba(247,111,111,0.1); color: var(--danger); border: 1px solid rgba(247,111,111,0.2); }
+  .qt-warn { background: rgba(247,168,79,0.1); color: var(--warn); border: 1px solid rgba(247,168,79,0.2); }
+
+  .card h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 1.2rem;
+    font-weight: 400;
+    color: var(--text);
+    flex: 1;
+  }
+
+  .card p {
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.75;
+    margin-bottom: 0.8rem;
+  }
+
+  .card p:last-child { margin-bottom: 0; }
+
+  /* CHART CONTAINERS */
+  .chart-wrap {
+    background: var(--bg3);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+    position: relative;
+  }
+
+  .chart-wrap canvas { max-height: 280px; }
+
+  /* INSIGHT BOX */
+  .insight {
+    border-left: 3px solid;
+    padding: 1rem 1.2rem;
+    border-radius: 0 8px 8px 0;
+    margin: 1.2rem 0;
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  .insight.blue { border-color: var(--accent); background: rgba(79,142,247,0.06); color: #a8c8ff; }
+  .insight.green { border-color: var(--accent2); background: rgba(56,217,169,0.06); color: #a8f0da; }
+  .insight.red { border-color: var(--danger); background: rgba(247,111,111,0.06); color: #ffb3b3; }
+  .insight.warn { border-color: var(--warn); background: rgba(247,168,79,0.06); color: #ffd9a8; }
+
+  /* RECOMENDAÇÃO */
+  .rec {
+    background: rgba(56,217,169,0.04);
+    border: 1px solid rgba(56,217,169,0.15);
+    border-radius: 8px;
+    padding: 1.2rem 1.4rem;
+    margin-top: 1.2rem;
+  }
+
+  .rec-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent2);
+    margin-bottom: 0.5rem;
+  }
+
+  .rec p {
+    font-size: 13px;
+    color: #8ecfba;
+    margin-bottom: 0 !important;
+  }
+
+  /* STAT BARS */
+  .stat-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 10px 0;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--text2);
+    width: 100px;
+    flex-shrink: 0;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .stat-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--bg);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .stat-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 1s ease;
+  }
+
+  .stat-val {
+    font-size: 12px;
+    font-weight: 500;
+    font-family: 'DM Mono', monospace;
+    width: 42px;
+    text-align: right;
+  }
+
+  /* COMPARATIVO */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 1.2rem 0;
+  }
+
+  .compare-col {
+    background: var(--bg3);
+    padding: 1.2rem 1.4rem;
+  }
+
+  .compare-title {
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    font-weight: 500;
+  }
+
+  .compare-title.ap { color: var(--accent); }
+  .compare-title.rep { color: var(--danger); }
+
+  .compare-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+
+  .compare-item:last-child { border-bottom: none; }
+  .compare-item .lbl { color: var(--text3); }
+  .compare-item .val { font-family: 'DM Mono', monospace; font-weight: 500; }
+  .compare-item .val.blue { color: var(--accent); }
+  .compare-item .val.red { color: var(--danger); }
+
+  /* RISK TABLE */
+  .risk-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 1.2rem 0;
+  }
+
+  .risk-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+  }
+
+  .risk-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--danger);
+    flex-shrink: 0;
+  }
+
+  .risk-text { color: var(--text2); flex: 1; }
+  .risk-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--danger);
+    background: rgba(247,111,111,0.1);
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    padding: 2rem;
+    text-align: center;
+  }
+
+  .footer-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .footer-inner p {
+    font-size: 12px;
+    color: var(--text3);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .footer-inner a { color: var(--accent); text-decoration: none; }
+
+  /* ANIMAÇÕES */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card, .kpi-grid, .chart-wrap {
+    animation: fadeUp 0.5s ease both;
+  }
+
+  @media (max-width: 640px) {
+    .compare-grid { grid-template-columns: 1fr; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    h1 { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="tag">Análise de Dados · SQL + Python + Power BI</div>
+    <h1>Desempenho <em>Estudantil</em><br>— Análise e Insights</h1>
+    <p class="header-sub">Análise exploratória de 500 alunos do ensino médio, identificando fatores determinantes de aprovação e perfis de risco acadêmico.</p>
+    <div class="header-meta">
+      <span class="meta-item"><span class="meta-dot"></span>500 alunos analisados</span>
+      <span class="meta-item"><span class="meta-dot"></span>8 queries SQL</span>
+      <span class="meta-item"><span class="meta-dot"></span>Dataset: Kaggle</span>
+      <span class="meta-item"><span class="meta-dot"></span>Ferramentas: SQLite · Python · Power BI</span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- KPIs -->
+  <section>
+    <div class="section-label">Visão geral</div>
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-label">Total de alunos</div>
+        <div class="kpi-value blue">500</div>
+        <div class="kpi-sub">dataset analisado</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Aprovados</div>
+        <div class="kpi-value green">64,6%</div>
+        <div class="kpi-sub">323 alunos</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Reprovados</div>
+        <div class="kpi-value red">35,4%</div>
+        <div class="kpi-sub">177 alunos</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Média horas/semana</div>
+        <div class="kpi-value warn">15,3h</div>
+        <div class="kpi-sub">geral da turma</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Nota final média</div>
+        <div class="kpi-value blue">56,0</div>
+        <div class="kpi-sub">queda de 7pts vs anterior</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Alunos pioraram</div>
+        <div class="kpi-value red">61,6%</div>
+        <div class="kpi-sub">308 alunos regrediram</div>
+      </div>
+    </div>
+
+    <!-- Resumo executivo -->
+    <div class="card">
+      <div class="card-header">
+        <h3>Resumo Executivo</h3>
+        <span class="query-tag qt-blue">Overview</span>
+      </div>
+      <p>A análise de desempenho de 500 alunos do ensino médio revelou que <strong style="color:var(--text)">horas de estudo semanais é o fator mais determinante para aprovação</strong> — muito à frente de frequência, acesso à internet ou escolaridade dos pais. A taxa de aprovação geral de 64,6% é positiva, mas oculta um dado preocupante: mais de um terço dos alunos não atingiu os critérios mínimos.</p>
+      <p>O achado mais significativo é a progressão quase linear entre dedicação e resultado: alunos que estudam até 5h semanais aprovam apenas 18,8% das vezes, enquanto os que estudam acima de 26h atingem 100% de aprovação. O ponto crítico de inflexão está entre 11 e 16 horas semanais.</p>
+      <p>Fatores externos como acesso à internet e participação em atividades extracurriculares mostraram impacto estatisticamente irrelevante (diferença máxima de 4,7 pontos percentuais entre grupos), reforçando que comportamentos individuais de estudo superam condições estruturais na determinação do resultado acadêmico.</p>
+    </div>
+  </section>
+
+  <!-- Q1 -->
+  <section>
+    <div class="section-label">Query 1</div>
+    <div class="card">
+      <div class="card-header">
+        <h3>Taxa Geral de Aprovação e Reprovação</h3>
+        <span class="query-tag qt-blue">COUNT · GROUP BY · %</span>
+      </div>
+      <p>De um total de 500 alunos, 323 foram aprovados (64,6%) e 177 reprovados (35,4%). Embora a taxa de aprovação seja majoritária, a proporção de reprovação é suficientemente significativa para justificar análises mais aprofundadas sobre os fatores de risco.</p>
+      <div class="chart-wrap">
+        <canvas id="chart1"></canvas>
+      </div>
+      <div class="insight blue">Mais de um terço dos alunos não atingiu os critérios mínimos — volume relevante que justifica ações preventivas e monitoramento contínuo.</div>
+      <div class="rec">
+        <div class="rec-label">Recomendação</div>
+        <p>Investigar os principais fatores associados à reprovação e implementar programas de acompanhamento acadêmico e reforço direcionados aos alunos em risco.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q2 -->
+  <section>
+    <div class="section-label">Query 2</div>
+    <div class="card">
+      <div class="card-header">
+        <h3>Perfil Médio: Aprovados vs Reprovados</h3>
+        <span class="query-tag qt-blue">AVG · GROUP BY</span>
+      </div>
+      <p>A comparação entre os dois grupos revela diferenças expressivas, especialmente nas horas de estudo semanais. Aprovados estudam em média 19,5h/semana — mais que o dobro dos 7,7h dos reprovados. A nota final segue o mesmo padrão: 65 pontos vs 39,5 pontos.</p>
+      <div class="compare-grid">
+        <div class="compare-col">
+          <div class="compare-title ap">Aprovados · 323 alunos</div>
+          <div class="compare-item"><span class="lbl">Horas/semana</span><span class="val blue">19,5h</span></div>
+          <div class="compare-item"><span class="lbl">Frequência</span><span class="val blue">77,9%</span></div>
+          <div class="compare-item"><span class="lbl">Nota anterior</span><span class="val blue">70,2</span></div>
+          <div class="compare-item"><span class="lbl">Nota final</span><span class="val blue">65,0</span></div>
+        </div>
+        <div class="compare-col">
+          <div class="compare-title rep">Reprovados · 177 alunos</div>
+          <div class="compare-item"><span class="lbl">Horas/semana</span><span class="val red">7,7h</span></div>
+          <div class="compare-item"><span class="lbl">Frequência</span><span class="val red">73,5%</span></div>
+          <div class="compare-item"><span class="lbl">Nota anterior</span><span class="val red">51,2</span></div>
+          <div class="compare-item"><span class="lbl">Nota final</span><span class="val red">39,5</span></div>
+        </div>
+      </div>
+      <div class="insight blue">Aprovados estudam 2,5× mais que reprovados. A frequência apresenta diferença menor (77,9% vs 73,5%), indicando que presença sozinha não determina o resultado.</div>
+      <div class="rec">
+        <div class="rec-label">Recomendação</div>
+        <p>Criar programas de incentivo ao estudo e monitorar alunos com carga horária semanal abaixo de 10 horas como critério de alerta prioritário.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q3 -->
+  <section>
+    <div class="section-label">Query 3</div>
+    <div class="card">
+      <div class="card-header">
+        <h3>Aprovação por Faixa de Horas de Estudo</h3>
+        <span class="query-tag qt-green">CASE WHEN · SUM condicional</span>
+      </div>
+      <p>A análise por faixas revela a relação mais forte do dataset: uma progressão quase linear entre horas de estudo e taxa de aprovação. O ponto de inflexão crítico está entre 11 e 16 horas semanais.</p>
+
+      <div style="margin: 1.5rem 0;">
+        <div class="stat-row">
+          <span class="stat-label">0 – 5h</span>
+          <div class="stat-bar"><div class="stat-fill" style="width:18.8%;background:var(--danger)"></div></div>
+          <span class="stat-val" style="color:var(--danger)">18,8%</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">6 – 10h</span>
+          <div class="stat-bar"><div class="stat-fill" style="width:33%;background:#f7a84f"></div></div>
+          <span class="stat-val" style="color:#f7a84f">33,0%</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">11 – 15h</span>
+          <div class="stat-bar"><div class="stat-fill" style="width:60.8%;background:#e8c44f"></div></div>
+          <span class="stat-val" style="color:#e8c44f">60,8%</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">16 – 20h</span>
+          <div class="stat-bar"><div class="stat-fill" style="width:84.8%;background:#7dd97a"></div></div>
+          <span class="stat-val" style="color:#7dd97a">84,8%</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">21 – 25h</span>
+          <div class="stat-bar"><div class="stat-fill" style="width:97.8%;background:var(--accent2)"></div></div>
+          <span class="stat-val" style="color:var(--accent2)">97,8%</span>
+        </div>
+        <div class="stat-row">
+          <span class="stat-label">26 – 30h</span>
+          <div class="stat-bar"><div class="stat-fill" style="width:100%;background:var(--accent2)"></div></div>
+          <span class="stat-val" style="color:var(--accent2)">100%</span>
+        </div>
+      </div>
+
+      <div class="chart-wrap">
+        <canvas id="chart3"></canvas>
+      </div>
+      <div class="insight green">Acima de 16h semanais a aprovação ultrapassa 84%. Acima de 21h, é praticamente garantida. A faixa 0–5h tem taxa de reprovação de 81,2% — o maior risco identificado.</div>
+      <div class="rec">
+        <div class="rec-label">Recomendação</div>
+        <p>Estabelecer 15–20 horas semanais como meta mínima de estudo. Monitorar ativamente alunos abaixo de 10 horas como grupo de intervenção prioritária.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q4 -->
+  <section>
+    <div class="section-label">Query 4</div>
+    <div class="card">
+      <div class="card-header">
+        <h3>Evolução de Nota: Melhorou, Manteve ou Piorou?</h3>
+        <span class="query-tag qt-red">CASE WHEN · comparação entre colunas</span>
+      </div>
+      <p>Comparando a nota final com a nota anterior de cada aluno individualmente, o cenário é predominantemente negativo: 61,6% dos alunos pioraram o desempenho ao longo do período analisado.</p>
+      <div class="chart-wrap">
+        <canvas id="chart4"></canvas>
+      </div>
+      <div class="insight red">308 alunos (61,6%) pioraram. Apenas 8 alunos (1,6%) mantiveram estabilidade. A nota média da turma caiu 7 pontos — de 63,0 para 56,0 — indicando regressão generalizada.</div>
+      <div class="rec">
+        <div class="rec-label">Recomendação</div>
+        <p>Investigar os fatores que levam à queda de desempenho e implementar acompanhamento contínuo. Programas de intervenção precoce podem ser fundamentais para reverter essa tendência.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q5 -->
+  <section>
+    <div class="section-label">Query 5</div>
+    <div class="card">
+      <div class="card-header">
+        <h3>Aprovação por Escolaridade dos Pais</h3>
+        <span class="query-tag qt-warn">GROUP BY categórico · SUM condicional</span>
+      </div>
+      <p>A análise revela um resultado contra-intuitivo: não há progressão linear entre escolaridade dos pais e aprovação dos filhos. O grupo com pais de nível Bachelor apresenta a <em style="color:var(--danger)">menor</em> taxa de aprovação (53,6%), enquanto filhos de pais com apenas ensino médio têm a <em style="color:var(--accent2)">maior</em> (70,5%).</p>
+      <div class="chart-wrap">
+        <canvas id="chart5"></canvas>
+      </div>
+      <div class="insight warn">A anomalia do Bachelor sugere que fatores não capturados pelo dataset — como pressão familiar excessiva ou diferenças no perfil das instituições — podem influenciar mais que a escolaridade dos pais isoladamente.</div>
+      <div class="rec">
+        <div class="rec-label">Recomendação</div>
+        <p>Tratar a escolaridade dos pais como variável de contexto complementar, não como fator central de intervenção. Priorizar indicadores comportamentais como horas de estudo e frequência.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q6 -->
+  <section>
+    <div class="section-label">Query 6</div>
+    <div class="card">
+      <div class="card-header">
+        <h3>Perfil de Risco Crítico de Reprovação</h3>
+        <span class="query-tag qt-red">WHERE · filtros múltiplos · AND</span>
+      </div>
+      <p>A query identifica alunos que combinam simultaneamente três fatores críticos: menos de 10h de estudo semanais, frequência abaixo de 65% e nota anterior abaixo de 50 pontos. Esses alunos apresentam notas finais entre 21 e 38 pontos.</p>
+      <div class="risk-list">
+        <div class="risk-item">
+          <div class="risk-dot"></div>
+          <span class="risk-text">Horas de estudo semanais abaixo de 10h</span>
+          <span class="risk-badge">crítico</span>
+        </div>
+        <div class="risk-item">
+          <div class="risk-dot"></div>
+          <span class="risk-text">Frequência inferior a 65%</span>
+          <span class="risk-badge">crítico</span>
+        </div>
+        <div class="risk-item">
+          <div class="risk-dot"></div>
+          <span class="risk-text">Nota anterior abaixo de 50 pontos</span>
+          <span class="risk-badge">crítico</span>
+        </div>
+        <div class="risk-item">
+          <div class="risk-dot"></div>
+          <span class="risk-text">Nota final resultante: entre 21 e 38 pontos</span>
+          <span class="risk-badge">resultado</span>
+        </div>
+      </div>
+      <div class="insight red">O achado principal não está nos alunos individualmente, mas no padrão recorrente: baixa dedicação + baixa frequência + histórico fraco = alta probabilidade de reprovação. Esse perfil pode servir de base para um modelo preditivo.</div>
+      <div class="rec">
+        <div class="rec-label">Recomendação</div>
+        <p>Implementar sistema de alertas automáticos para alunos que atendam a dois ou mais critérios de risco simultaneamente, permitindo intervenção antes do fechamento das notas.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q7 -->
+  <section>
+    <div class="section-label">Query 7</div>
+    <div class="card">
+      <div class="card-header">
+        <h3>Top 5 Alunos por Gênero — Ranking de Desempenho</h3>
+        <span class="query-tag qt-blue">RANK() · PARTITION BY · CTE</span>
+      </div>
+      <p>Usando window functions com PARTITION BY gender, identificamos os 5 melhores alunos de cada gênero por nota final. O padrão é consistente em ambos os grupos: notas entre 85 e 95, carga de estudo entre 24 e 30 horas semanais, e frequência majoritariamente acima de 90%.</p>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border-radius:8px;overflow:hidden;margin:1.2rem 0">
+        <div style="background:var(--bg3);padding:1.2rem">
+          <div style="font-size:11px;font-family:'DM Mono',monospace;letter-spacing:0.08em;text-transform:uppercase;color:#f48fb1;margin-bottom:0.8rem">Feminino</div>
+          <div class="compare-item"><span class="lbl">STU0376</span><span class="val blue">95pts · 28h · 99,6%</span></div>
+          <div class="compare-item"><span class="lbl">STU0428</span><span class="val blue">93pts · 30h · 95,3%</span></div>
+          <div class="compare-item"><span class="lbl">STU0279</span><span class="val blue">91pts · 29h · 98,7%</span></div>
+          <div class="compare-item"><span class="lbl">STU0468</span><span class="val blue">86pts · 26h · 67,6%</span></div>
+          <div class="compare-item"><span class="lbl">STU0324</span><span class="val blue">85pts · 24h · 93,3%</span></div>
+        </div>
+        <div style="background:var(--bg3);padding:1.2rem">
+          <div style="font-size:11px;font-family:'DM Mono',monospace;letter-spacing:0.08em;text-transform:uppercase;color:#90caf9;margin-bottom:0.8rem">Masculino</div>
+          <div class="compare-item"><span class="lbl">STU0209</span><span class="val blue">91pts · 30h · 81,4%</span></div>
+          <div class="compare-item"><span class="lbl">STU0017</span><span class="val blue">89pts · 30h · 99,3%</span></div>
+          <div class="compare-item"><span class="lbl">STU0282</span><span class="val blue">89pts · 28h · 92,5%</span></div>
+          <div class="compare-item"><span class="lbl">STU0499</span><span class="val blue">86pts · 29h · 91,3%</span></div>
+          <div class="compare-item"><span class="lbl">STU0421</span><span class="val blue">85pts · 27h · 92,9%</span></div>
+        </div>
+      </div>
+
+      <div class="insight green">Top performers estudam 3 a 10× mais que alunos em risco crítico. O padrão de sucesso é independente de gênero — alta dedicação e presença são os denominadores comuns.</div>
+      <div class="rec">
+        <div class="rec-label">Recomendação</div>
+        <p>Utilizar o perfil dos top performers como benchmark. Programas de mentoria entre pares — onde alunos de alto desempenho influenciam os demais — podem ser uma estratégia eficaz e de baixo custo.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Q8 -->
+  <section>
+    <div class="section-label">Query 8</div>
+    <div class="card">
+      <div class="card-header">
+        <h3>Internet + Extracurricular: Impacto Combinado</h3>
+        <span class="query-tag qt-warn">CTE · GROUP BY múltiplo · concatenação</span>
+      </div>
+      <p>A análise cruzada das quatro combinações possíveis de acesso à internet e atividade extracurricular mostra variação máxima de 4,7 pontos percentuais entre os grupos — estatisticamente irrelevante quando comparado ao impacto das horas de estudo.</p>
+      <div class="chart-wrap">
+        <canvas id="chart8"></canvas>
+      </div>
+      <div class="insight warn">Com internet e extracurricular: 66,4%. Sem nenhum dos dois: 61,7%. Diferença de apenas 4,7pp. Esses fatores atuam como complementares, não como determinantes do resultado acadêmico.</div>
+      <div class="rec">
+        <div class="rec-label">Recomendação</div>
+        <p>Não tratar acesso à internet ou extracurricular como prioridade isolada em estratégias de melhoria. O foco deve permanecer em variáveis com impacto comprovado: carga de estudo e acompanhamento acadêmico.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONCLUSÃO -->
+  <section>
+    <div class="section-label">Conclusão</div>
+    <div class="card">
+      <div class="card-header">
+        <h3>Principais Aprendizados da Análise</h3>
+        <span class="query-tag qt-green">Síntese</span>
+      </div>
+      <p>Este projeto demonstrou como análises SQL estruturadas, combinadas com visualizações em Python e dashboards no Power BI, permitem extrair insights acionáveis de datasets educacionais. Os achados principais são:</p>
+      <div style="display:flex;flex-direction:column;gap:10px;margin:1.2rem 0">
+        <div class="insight green" style="margin:0"><strong>Horas de estudo</strong> é a variável mais preditiva — supera frequência, acesso à internet e escolaridade dos pais combinados.</div>
+        <div class="insight red" style="margin:0"><strong>61,6% dos alunos pioraram</strong> a nota final — sinal de alerta que demanda investigação sobre continuidade do aprendizado.</div>
+        <div class="insight warn" style="margin:0"><strong>Anomalia do Bachelor</strong> — resultado contra-intuitivo que aponta para fatores não capturados pelo dataset, abrindo espaço para análises futuras.</div>
+        <div class="insight blue" style="margin:0"><strong>Perfil de risco identificável</strong> — a combinação de baixo estudo + baixa frequência + histórico fraco é um preditor confiável de reprovação.</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-inner">
+    <p>Relatório gerado com <strong>Claude AI</strong> · Projeto de portfólio por <strong>Nicolas Hovacker</strong> · <a href="https://github.com/nicolashovacker/student-performance-analysis" target="_blank">github.com/nicolashovacker</a></p>
+  </div>
+</footer>
+
+<script>
+const defaults = {
+  color: '#8892a4',
+  borderColor: '#2a3349',
+  font: { family: 'DM Sans' }
+};
+
+Chart.defaults.color = defaults.color;
+Chart.defaults.borderColor = defaults.borderColor;
+Chart.defaults.font.family = defaults.font.family;
+
+// Chart 1 — Aprovação geral
+new Chart(document.getElementById('chart1'), {
+  type: 'doughnut',
+  data: {
+    labels: ['Aprovados', 'Reprovados'],
+    datasets: [{
+      data: [64.6, 35.4],
+      backgroundColor: ['rgba(56,217,169,0.8)', 'rgba(247,111,111,0.8)'],
+      borderColor: ['#38d9a9', '#f76f6f'],
+      borderWidth: 1,
+      hoverOffset: 8
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    cutout: '65%',
+    plugins: {
+      legend: { position: 'bottom', labels: { padding: 20, usePointStyle: true } },
+      tooltip: {
+        callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}%` }
+      }
+    }
+  }
+});
+
+// Chart 3 — Faixas de horas
+new Chart(document.getElementById('chart3'), {
+  type: 'bar',
+  data: {
+    labels: ['0–5h', '6–10h', '11–15h', '16–20h', '21–25h', '26–30h'],
+    datasets: [{
+      label: '% Aprovação',
+      data: [18.8, 33.0, 60.8, 84.8, 97.8, 100],
+      backgroundColor: [
+        'rgba(247,111,111,0.7)',
+        'rgba(247,168,79,0.7)',
+        'rgba(232,196,79,0.7)',
+        'rgba(125,217,122,0.7)',
+        'rgba(56,217,169,0.7)',
+        'rgba(56,217,169,0.9)'
+      ],
+      borderColor: ['#f76f6f','#f7a84f','#e8c44f','#7dd97a','#38d9a9','#38d9a9'],
+      borderWidth: 1,
+      borderRadius: 4
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y}% de aprovação` } }
+    },
+    scales: {
+      y: {
+        beginAtZero: true, max: 110,
+        grid: { color: 'rgba(42,51,73,0.8)' },
+        ticks: { callback: v => v + '%' }
+      },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// Chart 4 — Evolução
+new Chart(document.getElementById('chart4'), {
+  type: 'bar',
+  data: {
+    labels: ['Piorou', 'Melhorou', 'Manteve'],
+    datasets: [{
+      label: 'Alunos',
+      data: [308, 184, 8],
+      backgroundColor: ['rgba(247,111,111,0.7)', 'rgba(56,217,169,0.7)', 'rgba(79,142,247,0.7)'],
+      borderColor: ['#f76f6f', '#38d9a9', '#4f8ef7'],
+      borderWidth: 1,
+      borderRadius: 4
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: ctx => {
+            const pcts = {308: '61,6%', 184: '36,8%', 8: '1,6%'};
+            return ` ${ctx.parsed.y} alunos (${pcts[ctx.parsed.y]})`;
+          }
+        }
+      }
+    },
+    scales: {
+      y: { grid: { color: 'rgba(42,51,73,0.8)' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// Chart 5 — Escolaridade
+new Chart(document.getElementById('chart5'), {
+  type: 'bar',
+  data: {
+    labels: ['High School', 'Master', 'None', 'PhD', 'Bachelor'],
+    datasets: [{
+      label: '% Aprovação',
+      data: [70.5, 67.0, 66.7, 64.8, 53.6],
+      backgroundColor: [
+        'rgba(56,217,169,0.7)',
+        'rgba(79,142,247,0.7)',
+        'rgba(79,142,247,0.7)',
+        'rgba(79,142,247,0.6)',
+        'rgba(247,111,111,0.7)'
+      ],
+      borderColor: ['#38d9a9','#4f8ef7','#4f8ef7','#4f8ef7','#f76f6f'],
+      borderWidth: 1,
+      borderRadius: 4
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.x}% de aprovação` } }
+    },
+    scales: {
+      x: {
+        beginAtZero: true, max: 85,
+        grid: { color: 'rgba(42,51,73,0.8)' },
+        ticks: { callback: v => v + '%' }
+      },
+      y: { grid: { display: false } }
+    }
+  }
+});
+
+// Chart 8 — Combinações
+new Chart(document.getElementById('chart8'), {
+  type: 'bar',
+  data: {
+    labels: ['Com internet\n+ extracurr.', 'Sem internet\n+ extracurr.', 'Com internet\nsem extracurr.', 'Sem internet\nsem extracurr.'],
+    datasets: [{
+      label: '% Aprovação',
+      data: [66.4, 65.5, 65.0, 61.7],
+      backgroundColor: 'rgba(247,168,79,0.65)',
+      borderColor: '#f7a84f',
+      borderWidth: 1,
+      borderRadius: 4
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.parsed.y}% de aprovação` } }
+    },
+    scales: {
+      y: {
+        min: 55, max: 72,
+        grid: { color: 'rgba(42,51,73,0.8)' },
+        ticks: { callback: v => v + '%' }
+      },
+      x: { grid: { display: false } }
+    }
+  }
+});
+</script>
+</body>
+</html>
