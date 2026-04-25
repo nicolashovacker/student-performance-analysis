@@ -2,6 +2,8 @@
 
 Análise de desempenho estudantil utilizando SQL, Python e Power BI, com foco na identificação de padrões de aprovação e fatores de risco acadêmico.
 
+[Visualizar Relatório de Insights](https://nicolashovacker.github.io/student-performance-analysis/relatorio_insights.html)
+
 ## Resultados e Insights
 
 ### Resumo executivo
@@ -89,5 +91,5 @@ student-performance-analysis/
 - [x] Integração com Python (Jupyter Notebook)
 - [x] Geração de 5 gráficos (.png)
 - [x] Dashboard no Power BI
-- [x] Documentação final — `relatorio_insights.html` (gerado com Claude AI)
+- [x] Documentação final — [Relatório HTML](https://nicolashovacker.github.io/student-performance-analysis/relatorio_insights.html) (gerado com Claude AI)
 - [x] README final com prints do dashboard
